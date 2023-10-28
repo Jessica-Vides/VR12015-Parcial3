@@ -1,0 +1,84 @@
+CREATE TABLE public.fact_vuelos(
+    vuelos_key INTEGER NOT NULL IDENTITY(1,1),
+    _FlightDate DATE,
+    _Marketing_Airline_Network VARCHAR(4),
+    _Flight_Number_Operating_Airline VARCHAR(6),
+    _CRSDepTime VARCHAR(15),
+    _DepTime INTEGER,
+    _DepDelay VARCHAR(6),
+    _DepDelayMinutes VARCHAR(6),
+    _DepDel15 VARCHAR(6),
+    _DepTimeBlk VARCHAR(4),
+    _CRSArrTime VARCHAR(6),
+    _ArrTime VARCHAR(5),
+    _ArrDelay VARCHAR(6),
+    _ArrDelayMinutes VARCHAR(6),
+    _ArrDel15 VARCHAR(6),
+    _ArrTimeBlk VARCHAR(4),
+    _Cancelled VARCHAR(2),
+    _CancellationCode VARCHAR(11),
+    _Diverted VARCHAR(4),
+    _CarrierDelay VARCHAR(7),
+    _WeatherDelay INTEGER,
+    _NASDelay VARCHAR(5),
+    _SecurityDelay VARCHAR(4),
+    _LateAircraftDelay VARCHAR(6),
+    PRIMARY KEY (vuelos_key)
+)DISTSTYLE AUTO;
+
+CREATE TABLE public.dim_aeropuerto_origen(
+    origen_key INTEGER NOT NULL IDENTITY(1,1),
+    _OriginAirportID INTEGER,
+    _OriginAirportSeqID  INTEGER,
+    _OriginCityMarketID INTEGER,
+    _Origin VARCHAR(5),
+    _OriginCityName VARCHAR(27),
+    _OriginState VARCHAR(4),
+    _OriginStateName VARCHAR(27),
+    _OriginWac VARCHAR(4),
+    PRIMARY KEY (origen_key)
+)DISTSTYLE AUTO;
+    
+CREATE TABLE public.dim_aeropuerto_destino(
+    destino_key INTEGER NOT NULL IDENTITY(1,1),
+    _DestAirportID INTEGER,
+    _DestAirportSeqID  INTEGER,
+    _DestCityMarketID INTEGER,
+    _Dest VARCHAR(5),
+    _DestCityName VARCHAR(27),
+    _DestState VARCHAR(4),
+    _DestStateName VARCHAR(27),
+    _DestWac VARCHAR(4),
+    PRIMARY KEY (destino_key)
+)DISTSTYLE AUTO;
+
+CREATE TABLE public.dim_date(
+    fecha_key INTEGER NOT NULL IDENTITY(1,1),
+    _Year INTEGER,
+    _Quarter INTEGER,
+    _Month INTEGER,
+    _DayofMonth INTEGER,
+    _DayOfWeek INTEGER,
+    _FlightDate INTEGER,
+    PRIMARY KEY (fecha_key)
+)DISTSTYLE AUTO;
+
+CREATE TABLE public.dim_airlines(
+    aerolinea_key INTEGER NOT NULL IDENTITY(1,1),
+    Code VARCHAR(3),
+    Description VARCHAR(45),
+    PRIMARY KEY (aerolinea_key)
+)DISTSTYLE AUTO;
+
+
+
+COPY parcial3.public.dim_aeropuerto_destino FROM 's3://p3-2023/presentation/dim_aeropuerto_origen.csv' IAM_ROLE 'arn:aws:iam::068248429043:role/LecturaS3' FORMAT AS CSV DELIMITER ',' QUOTE '"' REGION AS 'us-east-2' ignoreheader 1
+
+COPY parcial3.public.dim_aeropuerto_origen FROM 's3://p3-2023/presentation/dim_aeropuerto_origen.csv' IAM_ROLE 'arn:aws:iam::068248429043:role/LecturaS3' FORMAT AS CSV DELIMITER ';' QUOTE '"' REGION AS 'us-east-2' ignoreheader 1
+
+COPY parcial3.public.dim_date FROM 's3://p3-2023/presentation/dim_date.csv' IAM_ROLE 'arn:aws:iam::068248429043:role/LecturaS3' FORMAT AS CSV DELIMITER ',' QUOTE '"' REGION AS 'us-east-2'ignoreheader 1
+
+COPY parcial3.public.fact_vuelos FROM 's3://p3-2023/presentation/fact_vuelos.csv' IAM_ROLE 'arn:aws:iam::068248429043:role/LecturaS3' FORMAT AS CSV DELIMITER ',' QUOTE '"' REGION AS 'us-east-2'ignoreheader 1
+
+
+COPY parcial3.public.dim_airlines FROM 's3://p3-2023/presentation/dim_airlines.csv' IAM_ROLE 'arn:aws:iam::068248429043:role/LecturaS3' FORMAT AS CSV DELIMITER ',' QUOTE '''' REGION AS 'us-east-2'ignoreheader 1
